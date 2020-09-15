@@ -1,0 +1,125 @@
+# Copyright (C) 2018 Freetech Solutions
+
+# This file is part of OMniLeads
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see http://www.gnu.org/licenses/.
+#
+---
+
+# se crea el grupo de usuario omnileads
+- name: Creation of {{ usuario }} group
+  group: name={{ usuario }} state=present
+
+- name: Creation of {{ usuario }} user
+  user: name={{ usuario }} group={{ usuario }} create_home=yes shell=/bin/bash home=/opt/{{ usuario }} generate_ssh_key=yes ssh_key_bits=2048 state=present
+
+# CentOS SELINUX disbled
+- name: CentOS Disable Selinux
+  command: "{{ item }}"
+  with_items:
+      - sed -i 's/\(^SELINUX=\).*/\SELINUX=disabled/' /etc/sysconfig/selinux
+      - sed -i 's/\(^SELINUX=\).*/\SELINUX=disabled/' /etc/selinux/config
+  when: ansible_os_family == "RedHat"
+
+# Se añaden los binarios que no van a necesitar password al hacerlos con sudo
+- name: Edit sudoers to execute binaries withouth password
+  lineinfile: dest=/etc/sudoers line={{ item }}
+  with_items:
+    - "{{ usuario }} ALL=(ALL:ALL)  ALL"
+    - "{{ usuario }} ALL=(ALL) NOPASSWD: /usr/bin/rsync, /usr/sbin/asterisk"
+
+# Se setea el timezone
+- name: Set timezone of server
+  timezone: name={{ TZ }}
+
+# CentOS yum configure
+- name: CentOS Configure yum for ansible
+  ini_file: path=/etc/yum.conf section=main option="{{ item.option }}" no_extra_spaces=yes value="{{ item.value }}" state=present
+  with_items:
+    - { option: "sslverify", value: "0" }
+    - { option: "timeout", value: "300" }
+    - { option: "minrate", value: "100" }
+  when: ansible_os_family == "RedHat"
+
+# CentOS epel-repo enable
+- name: CentOS Install of epel-release repo (centos)
+  yum: name=epel-release state=present update_cache=yes
+  when: ansible_os_family == "RedHat"
+
+# CentOS dependencies to compile Asterisk
+- name: Install of CentOS dependencies
+  yum: name={{ item }} state=present update_cache=yes
+  with_items:
+      - crontabs
+      - gcc
+      - gcc-c++
+      - dh-autoreconf
+      - cdbs
+      - perl
+      - cronie
+      - openssl-devel
+      - cronie-anacron
+      - make
+      - gdb
+      - which
+      - net-tools
+      - gnutls-devel
+      - kernel-headers
+      - acl
+      - bind-utils
+      - sqlite-devel
+      - tcpdump
+      - python3
+      - python3-devel
+      - python3-pip
+      - git
+      - libedit
+  retries: 3
+  delay: 3
+  register: result
+  until: result is success
+  when: ansible_os_family == "RedHat"
+
+# Ubuntu/Debian dependencies to compile Asterisk
+- name: Install of Ubuntu/Debian dependencies
+  apt: "name={{ item }} state=present update_cache=yes dpkg_options=no-triggers"
+  with_items:
+      - git
+      - curl
+      - wget
+      - libnewt-dev
+      - libssl-dev
+      - libncurses5-dev
+      - subversion
+      - libsqlite3-dev
+      - build-essential
+      - libjansson-dev
+      - libxml2-dev
+      - uuid-dev
+      - dh-autoreconf
+      - lame
+      - subversion
+      - odbc-postgresql
+      - postgresql-client
+      - unzip
+      - uuid
+      - python-apt
+      - sngrep
+      - tcpdump
+      - python3-pip
+  retries: 3
+  delay: 3
+  register: result
+  until: result is success
+  when: ansible_os_family == "Debian"

@@ -1,0 +1,441 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Introducción &mdash; documentación de sbc4oml - </title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/translations.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> sbc4oml
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Introducción</a></li>
+<li><a class="reference internal" href="#deploy-de-asterisk">Deploy de Asterisk</a></li>
+<li><a class="reference internal" href="#nat-puertos-y-direcciones-ip">NAT, puertos y direcciones IP</a></li>
+<li><a class="reference internal" href="#seguridad">Seguridad</a></li>
+<li><a class="reference internal" href="#configuracion-de-ip-publica-sip">Configuración de IP publica SIP</a></li>
+<li><a class="reference internal" href="#deploy-de-tenants-trunks">Deploy de tenants &amp; trunks</a></li>
+<li><a class="reference internal" href="#dar-de-baja-tenants-y-o-trunks">Dar de baja tenants y/o trunks</a></li>
+<li><a class="reference internal" href="#logs">Logs</a><ul>
+<li><a class="reference internal" href="#formato-del-archivo">Formato del archivo</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">sbc4oml</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Introducción</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/contenido.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="introduccion">
+<span id="descrpicion-general"></span><h1>Introducción<a class="headerlink" href="#introduccion" title="Enlazar permanentemente con este título">¶</a></h1>
+<p>PSTNGW4OML implementa un Gateway PSTN para una o más instancias de OMniLeads que necesiten concentrar la salida a la PSTN en un único punto de acceso al exterior. Sobre todo en despliegues
+Multi Tenant en la nube en donde resulta interesante utilizar una única dirección IP pública estática como punto de contacto con todos los carriers de troncales SIP que involucre
+cada uno de los tenants OMniLeads desplegados.</p>
+<img alt="_images/sbc4oml.png" src="_images/sbc4oml.png" />
+</div>
+<div class="section" id="deploy-de-asterisk">
+<span id="dialplan-astdb"></span><h1>Deploy de Asterisk<a class="headerlink" href="#deploy-de-asterisk" title="Enlazar permanentemente con este título">¶</a></h1>
+<p>Una vez descargado el repositorio se cuenta con un rol de Ansible para desplegar Asterisk sobre CentOS7 o Ubuntu-18.04. Para poder ejecutar dicho deploy necesitamos contar con
+ansible-1.9.2 descargado a través de python-pip.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install <span class="s2">&quot;ansible==2.9.2&quot;</span> --user
+pip3 install -e git+https://github.com/SrMoreno/pyst2@master#egg<span class="o">=</span>pyst2 --user
+</pre></div>
+</div>
+<p>Asumiendo que contamos con Ansible, el siguiente paso será preparar el <em>inventory</em> con el listado de <em>hosts</em> sobre los cuales se desplegará Asterisk junto a la configuración de PSTNGW.
+Para ello, generar el archivo <em>inventory</em> sobre el directorio ./pstngw4oml/deploy/asterisk-ansible-role</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>X.X.X.X <span class="nv">ansible_connection</span><span class="o">=</span>ssh <span class="nv">ansible_user</span><span class="o">=</span>root
+Y.Y.Y.Y <span class="nv">ansible_connection</span><span class="o">=</span>ssh <span class="nv">ansible_user</span><span class="o">=</span>root
+Z.Z.Z.Z <span class="nv">ansible_connection</span><span class="o">=</span>ssh <span class="nv">ansible_user</span><span class="o">=</span>root
+</pre></div>
+</div>
+<p>Todos los hosts que necesitemos.</p>
+<p>Una vez generado el <em>inventory</em> procedemos con la transferencia de la clave pública del deployer sobre el/los host/s.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh-copy-id root@X.X.X.X
+</pre></div>
+</div>
+<p>Y finalmente se ejecuta la <em>playbook</em> ansible que implementa nuestro pstngw4oml</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ansible-playbook asterisk.yml -i inventory
+</pre></div>
+</div>
+</div>
+<div class="section" id="nat-puertos-y-direcciones-ip">
+<span id="puertos-nat-y-direcciones-ip"></span><h1>NAT, puertos y direcciones IP<a class="headerlink" href="#nat-puertos-y-direcciones-ip" title="Enlazar permanentemente con este título">¶</a></h1>
+<img alt="_images/pstngw4oml.png" src="_images/pstngw4oml.png" />
+</div>
+<div class="section" id="seguridad">
+<span id="id1"></span><h1>Seguridad<a class="headerlink" href="#seguridad" title="Enlazar permanentemente con este título">¶</a></h1>
+<p>En este punto tenemos dos opciones, por un lado deshabilitar <em>firewalld</em> y trabajar directamente con el firewall que proporciona el proveedor de infra cloud y por el
+otro trabajar con iptables - firewalld.</p>
+<p>En cualquiera de los dos casos, la idea es bloquear todo el trafico proveniente de internet a excepción de las IPs públicas de los proveedores de SIP trunks, que
+querramos habilitar para nuestros tenants. En ese sentido debemos habilitar el tráfico proveniente de dichos órigenes con destino en los puertos <em>UDP: 5060 y 20000 al 50000</em>.</p>
+</div>
+<div class="section" id="configuracion-de-ip-publica-sip">
+<span id="alta-de-instancia-de-oml"></span><h1>Configuración de IP publica SIP<a class="headerlink" href="#configuracion-de-ip-publica-sip" title="Enlazar permanentemente con este título">¶</a></h1>
+<p>Si nuestro Asterisk se encuentra detrás de NAT, entonces se debe editar el archivo <em>sbc_pjsip_transports.con</em> para descomentar e insertar la dirección IP pública con la que salen
+<em>nateados</em> los paquetes SIP y SDP.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">external_media_address</span><span class="o">=</span>
+<span class="nv">external_signaling_address</span><span class="o">=</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="deploy-de-tenants-trunks">
+<h1>Deploy de tenants &amp; trunks<a class="headerlink" href="#deploy-de-tenants-trunks" title="Enlazar permanentemente con este título">¶</a></h1>
+<p>El proyecto consta de dos archivos ejecutables que nos van a permitir generar nuevos tenants OMniLeads y sus respectivos troncales SIP vinculados a los proveedores PSTN que disponga
+cada uno de los tenants, así como también las rutas salientes que permitan procesar cada tipo de llamada por los diferentes troncales del tenant.</p>
+<p><strong>Deploy de un tenant y sus troncales</strong></p>
+<p>Para levantar dicha configuración debemos utilizar el script <em>deploy_tenant.sh</em>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> /opt
+./deploy_tenant.sh --help
+
+      AstSBC tenant/trunk deploy script
+      How to use it:
+            --customer<span class="o">=</span><span class="nv">$CUSTOMER</span> the name of the tenant to deploy
+            --trunk<span class="o">=</span><span class="nv">$TRUNK</span> the name of the trunk to add
+            --trunk_ip<span class="o">=</span><span class="nv">$TRUNK_IP</span> the IP/fqdn of the the trunk to add
+            --trunk_port<span class="o">=</span><span class="nv">$TRUNK_PORT</span>  the SIP port of the trunk to add. If not passed default port added is <span class="m">5060</span>
+            --trunk_user<span class="o">=</span><span class="nv">$TRUNK_USER</span>  the SIP user of the trunk to add.
+            --trunk_password<span class="nv">$TRUNK_PASSWORD</span> the SIP password of the trunk to add.
+</pre></div>
+</div>
+<p>Con la opción –help podemos desplegar las opciones. De igual manera vamos a explicar qué implica cada una para luego ejemplificar.</p>
+<ul class="simple">
+<li><p><strong>customer</strong>: nombre del tenant sobre el cual estamos trabajando</p></li>
+<li><p><strong>trunk</strong>: nombre del trunk-SIP del lado PSTN. Este valor será el utilizado a nivel enpoint PJSIP</p></li>
+<li><p><strong>trunk_ip</strong>: la IP o fqdn del proveedor SIP PSTN</p></li>
+<li><p><strong>trunk_port</strong>: el puerto al cual apuntar (por más que sea 5060 hay que explicitarlo)</p></li>
+<li><p><strong>trunk_user</strong>: el username que proporciona el carrier SIP para registrarnos en su red y autenticar las llamadas</p></li>
+<li><p><strong>trunk_password</strong>: el password correspondiente al username</p></li>
+</ul>
+<p>Para el caso de dar de alta un proveedor SIP sobre un Tenant debemos lanzar:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./deploy_tenant.sh --custome<span class="o">=</span>oml-clienteA --trunk<span class="o">=</span>idt --trunk_ip<span class="o">=</span><span class="m">201</span>.33.21.10 --trunk_port<span class="o">=</span><span class="m">5060</span> --trunk_user<span class="o">=</span>mi_username --trunk_password<span class="o">=</span>23lk23lk4j23k4j23j423
+</pre></div>
+</div>
+<p>Esto va a generar las siguientes acciones a bajo nivel:</p>
+<ul class="simple">
+<li><p>Inserta la configuración del trunk SIP carrier en el archivo: <em>sbc_pjsip_endpoints_outside.conf</em></p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="p">;</span>For oml-tenant1-idt oml-tenant1 Trunk <span class="nv">ID</span><span class="o">=</span><span class="m">1</span>
+<span class="o">[</span>oml-tenant1-idt<span class="o">](</span>outside_endpoints<span class="o">)</span>
+<span class="nv">accepts_registrations</span><span class="o">=</span>no
+<span class="nv">accepts_auth</span><span class="o">=</span>no
+<span class="nv">sends_auth</span><span class="o">=</span>yes
+<span class="nv">sends_registrations</span><span class="o">=</span>yes
+endpoint/set_var<span class="o">=</span><span class="nv">TENANT</span><span class="o">=</span>oml-tenant1
+<span class="nv">remote_hosts</span><span class="o">=</span><span class="m">201</span>.235.179.118:6066
+endpoint/permit<span class="o">=</span><span class="m">201</span>.235.179.118/32
+endpoint/identify_by<span class="o">=</span>ip
+outbound_auth/username<span class="o">=</span><span class="m">50505050</span>
+outbound_auth/password<span class="o">=</span>omnileads
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Inserta la configuración del trunk SIP del tenant omnileads en el archivo: <em>sbc_pjsip_endpoints_oml.conf</em></p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>oml-tenant1<span class="o">](</span>omnileads_endpoints<span class="o">)</span>
+inbound_auth/username<span class="o">=</span>oml-tenant1
+inbound_auth/password<span class="o">=</span>C11H15NO2-C12h17N204P
+endpoint/context<span class="o">=</span>from-oml-tenant1
+endpoint/identify_by<span class="o">=</span>auth_username
+endpoint/set_var<span class="o">=</span><span class="nv">TENANT</span><span class="o">=</span>oml-tenant1
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Inserta la configuración del trunk SIP carrier a nivel <em>AstDB</em></p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/SBC/TENANT/oml-tenant1/TRUNK/1/NAME              : oml-tenant1-idt
+/SBC/TENANT/oml-tenant1/TRUNKS                    : <span class="m">1</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Nota</p>
+<p>Por cada carrier que querramos asignar a un mismo tenant, se debe ejecutar el comando expuesto modificando todos los parámetros a excepción de <em>–customer</em>.</p>
+</div>
+<p><strong>Deploy de rutas salientes y sus troncales para cada Tenant</strong></p>
+<p>Una vez configurado todo a nivel Tenant y sus proveedores SIP PSTN nos toca trabajar a nivel de rutas salientes para encaminar las diferentes tipos de llamadas provenientes del tenant
+sobre los diferentes troncales SIP asignados a dicho tenant. Para ello contamos con un segundo script: <em>outr_configuration.py</em>.</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> /opt
+python3 outr_configuration.py --help
+usage: outr_configuration.py <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>--customer CUSTOMER<span class="o">]</span> <span class="o">[</span>--pattern PATTERN<span class="o">]</span>
+      <span class="o">[</span>--name NAME<span class="o">]</span> <span class="o">[</span>--dial_options DIAL_OPTIONS<span class="o">]</span>
+      <span class="o">[</span>--dial_timeout DIAL_TIMEOUT<span class="o">]</span> <span class="o">[</span>--prefix PREFIX<span class="o">]</span>
+      <span class="o">[</span>--prepend PREPEND<span class="o">]</span> <span class="o">[</span>--trunk TRUNK<span class="o">]</span>
+
+      SBC Outr configuration script
+
+         optional arguments:
+         -h, --help                   show this <span class="nb">help</span> message and <span class="nb">exit</span>
+         --customer CUSTOMER          The tenant that will own the outr
+         --pattern PATTERN            The pattern <span class="k">for</span> this outr
+         --name NAME                  The name that will have this outr
+         --dial_options DIAL_OPTIONS  The dial options <span class="k">for</span> this route, this option is not mandatory
+         --dial_timeout DIAL_TIMEOUT  The dial timeout <span class="k">for</span> this route, this option is not mandatory
+         --prefix PREFIX              Prefix <span class="k">for</span> this route, this option is not mandatory
+         --prepend PREPEND            Prepend <span class="k">for</span> this route, this option is not mandatory
+         --trunk TRUNK                Specifies the trunk or trunks <span class="k">for</span> this route. You can
+                                      insert more than one trunk, the order you insert the
+                                      trunks will be the order of failover
+</pre></div>
+</div>
+</div></blockquote>
+<p>Como se puede apreciar el <em>help</em> de nuestro script enuncia cada una de las opciones o parámetros necesarios y opcionales que admite el script generador de enrutamiento saliente.</p>
+<p>Vamos a ejemplificar el uso de este script con los siguientes escenarios:</p>
+<ul class="simple">
+<li><p><strong>Ejemplo 1</strong>: se necesita hacer <em>match</em> con numeraciones salientes dentro de éstos patrones: <em>_XXXXXXX y _15X.</em>, para enviar las llamadas por los troncales: <em>trunk1 y trunk2</em> (en modo failover) del tenant <em>cliente1</em></p></li>
+</ul>
+<p>Para este ejemplo se deberá lanzar dos veces el script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 outr_configuration.py --customer<span class="o">=</span>cliente1 --pattern<span class="o">=</span>_XXXXXXX --name<span class="o">=</span>numeros_fijos --dial_timeout<span class="o">=</span><span class="m">35</span> --trunk<span class="o">=</span>cliente1-trunk1 --trunk<span class="o">=</span>cliente1-trunk2
+python3 outr_configuration.py --customer<span class="o">=</span>cliente1 --pattern<span class="o">=</span>_15X. --name<span class="o">=</span>numeros_fijos --dial_timeout<span class="o">=</span><span class="m">35</span> --trunk<span class="o">=</span>cliente1-trunk1 --trunk<span class="o">=</span>cliente1-trunk2
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Importante</p>
+<p>Observar como el parámetro <em>trunk</em> implica anteponer el nombre del tenant al nombre del trunk. Si observamos el archivo <em>sbc_pjsip_endpoints_outside</em> se puede
+notar que el nombre generado para el trunk involucra el nombre del tenant por defecto.</p>
+</div>
+<p>Una vez ejecutado el comando para generar ambas rutas, podemos observar que el archivo <em>sbc_extensions_to_outside.conf</em> a sido afectado.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>from-cliente1<span class="o">]</span>
+<span class="p">;</span>ruta _XXXXXXX para oml-tenant1 con <span class="nv">ID</span><span class="o">=</span><span class="m">1</span>
+<span class="nv">exten</span> <span class="o">=</span>&gt; _XXXXXXX,1,Verbose<span class="o">(</span>Ruta <span class="m">1</span> para tenant <span class="si">${</span><span class="nv">CONTEXT</span><span class="si">}</span><span class="o">)</span>
+<span class="nv">same</span> <span class="o">=</span>&gt; n,Gosub<span class="o">(</span>sbc-to-outside,s,1<span class="o">(</span><span class="si">${</span><span class="nv">TENANT</span><span class="si">}</span>,1,<span class="si">${</span><span class="nv">EXTEN</span><span class="si">}</span><span class="o">))</span>
+<span class="nv">same</span> <span class="o">=</span>&gt; n,Hangup<span class="o">()</span>
+
+<span class="p">;</span>ruta _15X. para oml-tenant1 con <span class="nv">ID</span><span class="o">=</span><span class="m">2</span>
+<span class="nv">exten</span> <span class="o">=</span>&gt; _15X.,1,Verbose<span class="o">(</span>Ruta <span class="m">2</span> para tenant <span class="si">${</span><span class="nv">CONTEXT</span><span class="si">}</span><span class="o">)</span>
+<span class="nv">same</span> <span class="o">=</span>&gt; n,Gosub<span class="o">(</span>sbc-to-outside,s,1<span class="o">(</span><span class="si">${</span><span class="nv">TENANT</span><span class="si">}</span>,2,<span class="si">${</span><span class="nv">EXTEN</span><span class="si">}</span><span class="o">))</span>
+<span class="nv">same</span> <span class="o">=</span>&gt; n,Hangup<span class="o">()</span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Importante</p>
+<p>Si necesitamos modificar el <em>dialplan</em> a mano, es importante no borrar el comentario generado arriba de cada bloque correspondiente a cada ruta.</p>
+</div>
+<p>También se generan las entradas en AstDB correspondientes.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>*CLI&gt; database show SBC
+/SBC/TENANT/oml-tenant1/OUTR/1/DIALTIME           : <span class="m">35</span>
+/SBC/TENANT/oml-tenant1/OUTR/1/NAME               : numeros_fijos
+/SBC/TENANT/oml-tenant1/OUTR/1/TRUNK/1            : <span class="m">1</span>
+/SBC/TENANT/oml-tenant1/OUTR/1/TRUNKS             : <span class="m">1</span>
+/SBC/TENANT/oml-tenant1/OUTR/2/DIALTIME           : <span class="m">35</span>
+/SBC/TENANT/oml-tenant1/OUTR/2/NAME               : numeros_fijos
+/SBC/TENANT/oml-tenant1/OUTR/2/TRUNK/1            : <span class="m">1</span>
+/SBC/TENANT/oml-tenant1/OUTR/2/TRUNKS             : <span class="m">1</span>
+/SBC/TENANT/oml-tenant1/TRUNK/1/NAME              : oml-tenant1-idt
+/SBC/TENANT/oml-tenant1/TRUNKS                    : <span class="m">1</span>
+</pre></div>
+</div>
+<p>Finalmente se terminan de unir las piezas en la siguiente figura:</p>
+</div>
+<div class="section" id="dar-de-baja-tenants-y-o-trunks">
+<h1>Dar de baja tenants y/o trunks<a class="headerlink" href="#dar-de-baja-tenants-y-o-trunks" title="Enlazar permanentemente con este título">¶</a></h1>
+<p>A continuación se listan algunas acciones típicas de la administración:</p>
+<ul class="simple">
+<li><p><strong>Eliminar un tenant</strong></p></li>
+</ul>
+<p>Si la idea es dar de baja un tenant los pasos a ejecutar son:</p>
+<ul class="simple">
+<li><p>1 - Eliminar el/los bloque/s de configuración correspondiente al/los carrier SIP del tenant en el archivo <em>sbc_pjsip_endpoints_outside</em></p></li>
+<li><p>2 - Eliminar las entradas de AstDB para dicho tenant:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>CLI&gt;database deltree SBC/TENANT/nombreTenant
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Modificar un trunk SIP de carrier de un tenant</strong></p></li>
+</ul>
+<p>Si necesitamos modificar algún trunk ya sea del lado tenant o carrier, tenemos que trabajar con los archivos a bajo nivel, <em>sbc_pjsip_endpoints_oml.conf</em> y <em>sbc_pjsip_endpoints_outside.conf</em> respectivamente.
+Los mismos se encuentran fisicamente en el path: <em>/opt/asterisk/etc/asterisk</em>.</p>
+</div>
+<div class="section" id="logs">
+<span id="id2"></span><h1>Logs<a class="headerlink" href="#logs" title="Enlazar permanentemente con este título">¶</a></h1>
+<p>Los logs del sistema son generados por el llamado al AGI (sbc_agi.sh). El archivo en cuestión se ubica en:</p>
+<hr class="docutils" />
+<div class="section" id="formato-del-archivo">
+<h2>Formato del archivo<a class="headerlink" href="#formato-del-archivo" title="Enlazar permanentemente con este título">¶</a></h2>
+<ul class="simple">
+<li></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, psychodoom
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

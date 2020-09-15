@@ -1,0 +1,94 @@
+---
+
+- debug: msg="Asterisk {{ asterisk_version }} is nost installed, proceeding to install"
+  when: '"asterisk_installed.stdout" != "asterisk_version"'
+  tags: ['postinstall','changeversion']
+
+- debug: msg="Asterisk is already installed in version {{ asterisk_version }}, skipping installation steps"
+  when: '"asterisk_installed.stdout" == "asterisk_version"'
+  tags: ['postinstall','changeversion']
+
+- name: Uninstall previous asterisk version
+  file: state=absent path={{ item }}
+  with_items:
+    - "{{ asterisk_location }}/sbin/"
+    - "{{ asterisk_location }}/lib64/"
+    - /usr/sbin/asterisk
+  when: '"asterisk_installed.stdout" != "asterisk_version"'
+  tags: ['changeversion']
+
+# Obtengo hostname del nodo
+- name: Get the hostname of node
+  command: hostname
+  register: hostname
+  tags: always
+  changed_when: false
+
+- set_fact: asterisk_fqdn="{{ hostname.stdout }}"
+  tags: always
+  changed_when: false
+
+# Obtengo IP del nodo
+#- name: Get IP adress of node (selfhosted)
+#  set_fact: sbc4oml_ip={{ hostvars[inventory_hostname]['ansible_' + iface]['ipv4']['address'] }}
+#  when: iface != "none"
+#  tags: always
+
+# Obtengo IP publica del nodo
+- name: Get public IP address of node
+  shell: curl http://ipinfo.io/ip
+  register: public_ip
+  tags: always
+
+- name: Validate IP public obtained
+  shell: if [[ {{ public_ip.stdout }} =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then echo 0; else echo 1; fi
+  args:
+    executable: /bin/bash
+  register: ip_val
+  tags: always
+  failed_when: false
+
+#  - fail:
+#    msg: "The public IP obtained is wrong, check in shell if you obtain a public IP with this command 'curl http://ipinfo.io/ip', after that please run the script again"
+#    when: ip_val.stdout != '0'
+#    tags: always
+
+# Comparo si la IP ingresada en el inventory es el mismo  de el nodo
+#- name: Compare if IP in inventory file is configured in the server
+#  assert:
+#    that: "'{{ omni_ip }}' in ansible_all_ipv4_addresses"
+#    msg: "The IP you inserted in inventory file is wrong, check it"
+#  when: iface == "none"
+#  changed_when: false
+#  tags: always
+
+#- name: Get the network/submask configured in default interface
+#  shell: default_if=$(ip route show | awk '/^default/ {print $5}'); route | grep $default_if|tail -1 |awk -F " " '{print $1"/"$3}'
+#  register: network_submask
+#  changed_when: false
+#  tags: always
+
+- name: Check Linux distribution
+  fail: msg="Linux distribution {{ ansible_os_family }} is invalid"
+  when: ansible_os_family != "RedHat" and ansible_os_family != "Debian"
+  changed_when: true
+  tags: always
+
+# Chequeo si la version de asterisk instalada es {{ asterisk_version }}
+- name: Check if Asterisk {{ asterisk_version }} is installed
+  shell: asterisk -V |awk -F " " '{print $2}'
+  changed_when: false
+  register: asterisk_installed
+  tags: ['postinstall','changeversion']
+
+# Chequea si ami_user esta definido
+- name: Check if AMI user variable is defined
+  fail: msg="AMI user undefined, edit ami_user in inventory file"
+  when: ami_user is not defined and assert_amiuser.rc == 1
+  tags: always
+
+# Chequea si ami_password esta definido
+- name: Check if AMI password variable is defined
+  fail: msg="AMI password undefined, edit ami_password in inventory file"
+  when: ami_password is not defined and assert_amipass.rc == 1
+  tags: always

@@ -1,0 +1,28 @@
+---
+
+asterisk_version: 16.12.0
+install_prefix: /opt
+
+ami_user: amisbc
+ami_password: c0nqu33st4sSBC
+TZ: America/Argentina/Cordoba
+prodenv: 1
+
+asterisk_location: "{{ install_prefix }}/asterisk"
+ast_agis_location: "{{ asterisk_location }}/var/lib/asterisk/agi-bin"
+ast_conf_location: "{{ asterisk_location }}/etc/asterisk"
+ast_logs_location: "{{ asterisk_location }}/var/log/asterisk"
+ast_sounds_location: "{{ asterisk_location }}/var/lib/asterisk/sounds"
+
+asterisk_repo: https://github.com/asterisk/asterisk.git
+#asterisk_repo: https://downloads.asterisk.org/pub/telephony/certified-asterisk/asterisk-{{ asterisk_version }}.tar.gz
+res_json_repo: https://github.com/felipem1210/asterisk-res_json.git
+
+usuario: asterisk
+cert: cert.pem
+key: key.pem
+country_code: 54
+
+app_ip: 192.168.95.20
+
+...

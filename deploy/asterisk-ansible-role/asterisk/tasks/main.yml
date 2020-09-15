@@ -1,0 +1,19 @@
+---
+
+- name: Include variables
+  include_vars: vars/main.yml
+  tags: always
+
+- name: Check if ASTERISK has been installed previously
+  include: checks.yml
+
+- name: OS pre-configurations
+  include: os_configuration.yml
+
+- name: ASTERISK install
+  include: install.yml
+
+- name: Asterisk post-conigurations
+  include: configuration.yml
+
+...

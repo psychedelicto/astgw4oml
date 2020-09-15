@@ -1,0 +1,80 @@
+---
+
+# Se crea el servicico de asterisk  para systemctl
+- name: Creation of asterisk.service
+  template: src=templates/asterisk.service dest=/etc/systemd/system/asterisk.service owner=root group=root mode=650
+  tags: ['changeversion']
+
+# Linkeo el binario a /usr/sbin
+- name: Create simbolic link of asterisk binarie
+  file: state=link src={{ asterisk_location }}/sbin/asterisk dest=/usr/sbin/asterisk force=true
+  tags: ['changeversion']
+
+# Permiso de usuario a la carpeta de asterisk
+- name: Set up permissions of asterisk
+  file: state=directory path={{ asterisk_location }} owner={{ usuario }} group={{ usuario }} recurse=yes
+  tags: ['postinstall','changeversion']
+
+# Borro el archivo de inicio de asterisk en el init.d
+- name: Erase default asterisk init.d service
+  file: state=absent path=/etc/init.d/asterisk
+  tags: ['changeversion']
+
+# Copy template .conf files
+- name: Copy of asterisk template files
+  template: src=templates/{{ item }} dest={{ ast_conf_location }} owner={{ usuario }} group={{ usuario }}
+  with_items:
+    - sbc_pjsip_transports.conf
+    - manager.conf
+  tags: ['postinstall','changeversion']
+
+# Copy .conf files
+- name: Copy of asterisk files
+  copy: src=../../astfiles/{{ item }} dest={{ ast_conf_location }} owner={{ usuario }} group={{ usuario }}
+  with_items:
+    - extensions.conf
+    - http.conf
+    - modules.conf
+    - rtp.conf
+    - pjsip.conf
+    - pjsip_wizard.conf
+    - sbc_extensions_from_outside.conf
+    - sbc_extensions_sub.conf
+    - sbc_pjsip_wizard.conf
+    - sbc_pjsip.conf
+  tags: ['postinstall','changeversion']
+
+# Copy AGI files
+- name: Copy of asterisk AGI files
+  copy: src=../../astfiles/{{ item }} dest={{ ast_agis_location }} owner={{ usuario }} group={{ usuario }}
+  with_items:
+    - sbc_agi.sh
+  tags: ['postinstall','changeversion']
+
+# Copy envar file
+- name: Copy of asterisk AGI files
+  template: src=templates/pstngw_envars.sh dest=/etc/profile.d/ mode=644 owner=root group=root
+  tags: ['postinstall','changeversion']
+
+# Habilito e inicio asterisk
+- name: Start and enable asterisk
+  systemd: name=asterisk state=restarted enabled=yes daemon_reload=yes
+  tags: ['postinstall','changeversion']
+
+# Añado un archivo para el logrotate
+- name: Configuration of logrotate
+  template: src=templates/asterisk dest=/etc/logrotate.d/asterisk owner=root group=root mode=644
+
+# Copy deploy files
+- name: Copy of deploy files
+  copy: src=../{{ item }} dest={{ install_prefix }} mode=744 owner={{ usuario }} group={{ usuario }}
+  with_items:
+    - deploy_tenant.sh
+    - outr_configuration.py
+  tags: ['postinstall','changeversion']
+
+
+# Install python pyst2
+- name: Install python pyst2
+  shell:
+    cmd: pip3 install -e git+https://github.com/SrMoreno/pyst2@master#egg=pyst2 --user

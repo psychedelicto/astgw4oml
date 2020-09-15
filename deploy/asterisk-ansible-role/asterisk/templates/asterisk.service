@@ -1,0 +1,21 @@
+[Unit]
+Description=Asterisk
+After=syslog.target network-online.target
+
+[Service]
+Type=forking
+#LimitNOFILE=infinity
+User=asterisk
+EnvironmentFile=/etc/profile.d/pstngw_envars.sh
+Environment=USER={{ usuario }}
+ExecStart=/usr/sbin/asterisk -U $USER -G $USER -g
+ExecReload=/usr/sbin/asterisk -x 'core restart gracefully'
+ExecStop=/usr/sbin/asterisk -x 'core stop now'
+PIDFile={{ asterisk_location }}/var/run/asterisk/asterisk.pid
+RuntimeDirectory=asterisk
+RuntimeDirectoryMode=755
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
